@@ -3,8 +3,8 @@ const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
-const ProductManager = require("./ProductManager")
-let data = new ProductManager("src/products.txt")
+const ProductManager = require("./managers/ProductManager")
+let data = new ProductManager("src/json/products.json")
 
 app.get("/products", async (req, res) => {
     try {

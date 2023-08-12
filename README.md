@@ -6,11 +6,7 @@
 git clone  https://github.com/marparedes/coder-backend-challenges.git
 ```
 - Install dependencies
-
-Choose the folder of the challenge. For example:
-
 ```
-cd clase4
 npm install
 ```
 - Build and run the project
