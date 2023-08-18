@@ -27,14 +27,15 @@ class ProductManager {
         }
     }
 
-    async addProduct(title, description, price, thumbnail, code, stock) {
+    async addProduct(product) {
+        let { title, description, code, price, status, stock, category, thumbnails } = product
         let newId = 0
         let newProduct = {}
 
         let data = await this.read()
         let products = JSON.parse(data)
 
-        if (this.validateCode(products, code) && title && description && price && thumbnail && stock) {
+        if (this.validateCode(products, code) && title && description && price && status && stock && category) {
 
             if (!products || products.length === 0) {
                 newId = this.firstId
@@ -47,8 +48,10 @@ class ProductManager {
             newProduct.description = description
             newProduct.price = price
             newProduct.code = code
-            newProduct.thumbnail = thumbnail
+            newProduct.status = status ? status : true
             newProduct.stock = stock
+            newProduct.category = category
+            newProduct.thumbnail = thumbnails
 
             products.push(newProduct)
 
@@ -57,7 +60,7 @@ class ProductManager {
             return newProduct
         }
 
-        return "Error: product already exists."
+        return Error("Error: product already exists.")
     }
 
     validateCode(products, code) {
@@ -86,18 +89,18 @@ class ProductManager {
         return result[0]
     }
 
-    // Recibe el id del producto y los cambios como un objeto
     async updateProduct(id, updateData) {
         try {
+
             let products = await this.getProducts() 
             let index = products.findIndex(product => product.id === id)
             if (index === -1) {
-                return { error: "Product not found" }
+                return Error({ error: "Product not found" })
             }
     
             let updatedProduct = { ...products[index], ...updateData }
             if (!this.validateCode(products.filter(p => p.id !== updatedProduct.id), updatedProduct.code)) {
-                return { error: "Code already exists" }
+                return Error({ error: "Code already exists" })
             }
     
             products[index] = updatedProduct
@@ -122,9 +125,10 @@ class ProductManager {
         
         if(index != -1) {
             products.splice(index, 1)
-            await this.write(products, `Producto con ID: ${id} eliminado`)
+            await this.write(products, "")
+            return { msg: `Producto con ID: ${id} eliminado`}
         } else {
-            return `Producto con ID: ${id} no existe`
+            return Error(`Producto con ID: ${id} no existe`)
         }
     }
 }
